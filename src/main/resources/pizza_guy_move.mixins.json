@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "baguchi.pizza_guy_move.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "refmap": "pizza_guy_move.refmap.json",
+  "mixins": [
+    "PlayerMixin"
+  ],
+  "client": [
+    "client.LocalPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
