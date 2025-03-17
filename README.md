@@ -1,3 +1,3 @@
-# Pizza Guy Game 
+# Pizza Guy Move
 
 This minecraft mod add unique mechanic from pizza tower such as mach run and etc...
