@@ -8,6 +8,9 @@ import net.minecraft.world.phys.Vec3;
 
 public class ShadowHandler {
     public static final ResourceLocation RUN_ID = ResourceLocation.fromNamespaceAndPath(PizzaGuyGame.MODID, "mach_run");
+    public static final float PRE_DASH = 0.4F;
+    public static final float POST_DASH = 0.8F;
+    public static final float FULL_DASH = 1F;
     public Vec3 prevShadow = Vec3.ZERO;
 
     public Vec3 shadow = Vec3.ZERO;

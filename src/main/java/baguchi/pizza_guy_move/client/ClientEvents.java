@@ -1,5 +1,8 @@
 package baguchi.pizza_guy_move.client;
 
+import baguchi.bagus_lib.animation.BaguAnimationController;
+import baguchi.bagus_lib.client.event.BagusModelEvent;
+import baguchi.bagus_lib.util.client.VectorUtil;
 import baguchi.pizza_guy_move.PizzaGuyGame;
 import baguchi.pizza_guy_move.api.ShadowHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,21 +13,43 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import org.joml.Vector3f;
 
 import static net.minecraft.client.renderer.entity.LivingEntityRenderer.getOverlayCoords;
 
 @EventBusSubscriber(modid = PizzaGuyGame.MODID, value = Dist.CLIENT)
-public class ClientEvents<E extends Entity, S extends EntityRenderState> {
+public class ClientEvents {
+
+    @SubscribeEvent
+    public static void animationEvent(BagusModelEvent.PostAnimate event) {
+        BaguAnimationController baguAnimationController = event.getBaguAnimationController();
+        if (baguAnimationController != null && event.getEntityRenderState().getRenderData(ClientRegistry.SHADOW) != null) {
+            EntityRenderState entityRenderState = event.getEntityRenderState();
+            ShadowHandler shadowHandler = event.getEntityRenderState().getRenderData(ClientRegistry.SHADOW);
+            if (shadowHandler.percentBoost > ShadowHandler.PRE_DASH && entityRenderState instanceof HumanoidRenderState livingEntityRenderState) {
+                VectorUtil.moveVecToPart(new Vector3f(), event.getModel().getAnyDescendantWithName("right_arm").orElseThrow());
+                VectorUtil.moveVecToPart(new Vector3f(), event.getModel().getAnyDescendantWithName("left_arm").orElseThrow());
+                VectorUtil.moveVecToPart(new Vector3f(), event.getModel().getAnyDescendantWithName("right_leg").orElseThrow());
+                VectorUtil.moveVecToPart(new Vector3f(), event.getModel().getAnyDescendantWithName("left_leg").orElseThrow());
+
+                if (event.getEntityRenderState().getRenderData(ClientRegistry.CLIMB) != null && event.getEntityRenderState().getRenderData(ClientRegistry.CLIMB)) {
+                    event.animateWalk(PlayerAnimations.wall_mach_run, livingEntityRenderState.walkAnimationPos, livingEntityRenderState.walkAnimationSpeed, 1.0F, 1.0F);
+                } else {
+                    event.animateWalk(PlayerAnimations.mach_run, livingEntityRenderState.walkAnimationPos, livingEntityRenderState.walkAnimationSpeed, 1.0F, 1.0F);
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void renderEvent(RenderLivingEvent.Post<LivingEntity, LivingEntityRenderState, EntityModel<LivingEntityRenderState>> event) {
@@ -38,7 +63,7 @@ public class ClientEvents<E extends Entity, S extends EntityRenderState> {
 
         ShadowHandler shadow = entity.getRenderData(ClientRegistry.SHADOW);
 
-        if (shadow != null && shadow.getPercentBoost() >= 0.8F) {
+        if (shadow != null && shadow.getPercentBoost() >= ShadowHandler.POST_DASH) {
 
             double shadowX = (shadow.getPrevShadow().x + (shadow.getShadow().x - shadow.getPrevShadow().x) * partialtick);
             double shadowY = (shadow.getPrevShadow().y + (shadow.getShadow().y - shadow.getPrevShadow().y) * partialtick);

@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEve
 @EventBusSubscriber(modid = PizzaGuyGame.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ClientRegistry {
     public static final ContextKey<ShadowHandler> SHADOW = new ContextKey<>(ResourceLocation.fromNamespaceAndPath(PizzaGuyGame.MODID, "shadow"));
+    public static final ContextKey<Boolean> CLIMB = new ContextKey<>(ResourceLocation.fromNamespaceAndPath(PizzaGuyGame.MODID, "climb"));
 
 /*    @SubscribeEvent
     public static void registerOverlay(RegisterGuiOverlaysEvent event) {
@@ -25,6 +26,7 @@ public class ClientRegistry {
             if (living instanceof IShadow shadowHandler) {
                 renderstate.setRenderData(SHADOW, shadowHandler.getShadowHandler());
             }
+            renderstate.setRenderData(CLIMB, living.onClimbable());
         });
     }
 }

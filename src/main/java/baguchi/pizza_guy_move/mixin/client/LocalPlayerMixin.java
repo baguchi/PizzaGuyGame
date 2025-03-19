@@ -1,6 +1,7 @@
 package baguchi.pizza_guy_move.mixin.client;
 
 import baguchi.pizza_guy_move.api.IShadow;
+import baguchi.pizza_guy_move.api.ShadowHandler;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -30,7 +31,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements I
     public boolean aiStep(boolean original) {
         if (original && getShadowHandler() != null) {
             boolean flag6 = !this.input.hasForwardImpulse() || !this.hasEnoughFoodToStartSprinting();
-            boolean flag7 = !flag6 && (!this.isInWater() || !this.isUnderWater()) && getShadowHandler().percentBoost > 0.4F;
+            boolean flag7 = !flag6 && (!this.isInWater() || !this.isUnderWater()) && getShadowHandler().percentBoost > ShadowHandler.PRE_DASH;
             if (flag7) {
 
                 return false;

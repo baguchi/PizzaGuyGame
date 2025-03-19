@@ -56,7 +56,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
                 pizzaGuyGame$shadowHandler.tick(this);
             }
 
-            if (pizzaGuyGame$shadowHandler.percentBoost >= 0.5F) {
+            if (pizzaGuyGame$shadowHandler.percentBoost > ShadowHandler.PRE_DASH) {
                 pizzaGuyGame$pushEntitiesWhenDashed(this);
             }
             pizzaGuyGame$tryAddDashBooster(this);
@@ -67,7 +67,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
     // climing stuff like peppino
     @Override
     public boolean onClimbable() {
-        return super.onClimbable() || this.pizzaGuyGame$shadowHandler.percentBoost > 0.2F && this.horizontalCollision;
+        return super.onClimbable() || this.pizzaGuyGame$shadowHandler.percentBoost > ShadowHandler.PRE_DASH && this.horizontalCollision;
     }
 
     private Vec3 handleOnClimbable(Vec3 p_21298_) {
@@ -124,7 +124,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
             d0 = 0.0;
         }
 
-        if (this.shouldDiscardFriction()) {
+        if (this.shouldDiscardFriction() || vec3.horizontalDistance() > 0.1F && !this.onGround()) {
             this.setDeltaMovement(vec3.x, d0, vec3.z);
         } else {
             float f2 = this instanceof FlyingAnimal ? f1 : 0.98F;
@@ -134,7 +134,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
 
     private float getFrictionInfluencedSpeed(float p_21331_) {
         if (!this.abilities.flying && !this.onGround() && this.pizzaGuyGame$shadowHandler.percentBoost > 0.5F) {
-            return this.getSpeed() * (0.21600002F / 0.98F);
+            return this.getDeltaMovement().horizontalDistance() > 0.1F && !this.onGround() ? 0.0F : 0.1F;
         } else if (this.abilities.flying) {
             return this.getFlyingSpeed();
         }
@@ -198,13 +198,13 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
     protected void pizzaGuyGame$tryAddDashBooster(LivingEntity entity) {
         if ((entity.isSprinting()) && entity.getPose() == Pose.STANDING) {
             if (pizzaGuyGame$shadowHandler.percentBoost <= 1) {
-                pizzaGuyGame$shadowHandler.percentBoost += 0.025F;
+                pizzaGuyGame$shadowHandler.percentBoost += 0.01F;
             } else if (pizzaGuyGame$shadowHandler.percentBoost <= 2) {
                 pizzaGuyGame$shadowHandler.percentBoost += 0.005F;
             } else {
                 pizzaGuyGame$shadowHandler.percentBoost = 2;
             }
-            entity.walkAnimation.setSpeed(pizzaGuyGame$shadowHandler.percentBoost + 1.0F);
+
         } else if (!this.horizontalCollision) {
             if (pizzaGuyGame$shadowHandler.percentBoost >= 0) {
                 pizzaGuyGame$shadowHandler.percentBoost -= 0.1F;
@@ -216,10 +216,13 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
                 pizzaGuyGame$shadowHandler.percentBoost = 0;
             } else {
                 if (pizzaGuyGame$shadowHandler.percentBoost <= 1) {
-                    pizzaGuyGame$shadowHandler.percentBoost += 0.025F;
+                    pizzaGuyGame$shadowHandler.percentBoost += 0.01F;
                 }
-                entity.walkAnimation.setSpeed(pizzaGuyGame$shadowHandler.percentBoost + 1.0F);
             }
+        }
+
+        if (pizzaGuyGame$shadowHandler.percentBoost > ShadowHandler.PRE_DASH) {
+            entity.walkAnimation.setSpeed(pizzaGuyGame$shadowHandler.percentBoost + 1.0F);
         }
 
         if (pizzaGuyGame$shadowHandler.percentBoost > 0) {
@@ -229,7 +232,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
                     return;
                 }
 
-                float f = 0.5F * pizzaGuyGame$shadowHandler.percentBoost;
+                float f = 0.75F * pizzaGuyGame$shadowHandler.percentBoost;
                 attributeinstance.addTransientModifier(new AttributeModifier(ShadowHandler.RUN_ID, f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
             }
         }
@@ -254,6 +257,6 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
 
     @Override
     public boolean canStandOnFluid(FluidState fluidState) {
-        return super.canStandOnFluid(fluidState) || this.getShadowHandler() != null && this.getShadowHandler().getPercentBoost() > 0.4F;
+        return super.canStandOnFluid(fluidState) || this.getShadowHandler() != null && this.getShadowHandler().getPercentBoost() > ShadowHandler.PRE_DASH;
     }
 }

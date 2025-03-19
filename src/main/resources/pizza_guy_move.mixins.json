@@ -5,7 +5,8 @@
   "minVersion": "0.8",
   "refmap": "pizza_guy_move.refmap.json",
   "mixins": [
-    "PlayerMixin"
+    "PlayerMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "client.LocalPlayerMixin"
