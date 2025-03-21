@@ -134,7 +134,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
 
     private float getFrictionInfluencedSpeed(float p_21331_) {
         if (!this.abilities.flying && !this.onGround() && this.pizzaGuyGame$shadowHandler.percentBoost > 0.5F) {
-            return this.getDeltaMovement().horizontalDistance() > 0.1F && !this.onGround() ? 0.0F : 0.1F;
+            return this.getSpeed() * (0.21600002F / 0.98F);
         } else if (this.abilities.flying) {
             return this.getFlyingSpeed();
         }
@@ -176,7 +176,7 @@ public abstract class PlayerMixin extends LivingEntity implements IShadow {
                     LivingEntity entity2 = list.get(l);
                     if (entity != entity2 && !entity.isAlliedTo(entity2)) {
                         entity2.knockback(2.0D * pizzaGuyGame$shadowHandler.percentBoost, entity.getX() - entity2.getX(), entity.getZ() - entity2.getZ());
-                        entity2.hurt(entity.damageSources().mobAttack(entity2), Mth.floor(8.0F * pizzaGuyGame$shadowHandler.percentBoost));
+                        entity2.hurt(entity.damageSources().mobAttack(entity2), Mth.floor(10.0F * pizzaGuyGame$shadowHandler.percentBoost));
                     }
                 }
             }
